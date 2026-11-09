@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Apunte AM LAR</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bitter:wght@500;600;700&display=swap">
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+  svg: { fontCache: 'global' },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+<style>
+/* Plan: hoja de cuaderno de ingeniería. Lo memorable es UNO: el gráfico de x³−3x en la portada.
+   Todo lo demás, sobrio. Títulos en slab serif de libro de texto, cuerpo en sans de alta legibilidad.
+   Layout: índice fijo a la izquierda (escritorio) + columna de lectura de ~70ch, alineada a la izquierda. */
+:root{
+  --paper:#f6f8f7; --sheet:#ffffff; --ink:#1b2320; --muted:#56615c; --line:#dce3df; --grid:#e4ebe7;
+  --accent:#1f4fa8; --accent-soft:#e8eefa;
+  --def:#1f4fa8; --def-bg:#edf2fb;
+  --teo:#5b42ad; --teo-bg:#f2effa;
+  --ej:#1d7048; --ej-bg:#ebf6f0;
+  --ojo:#a8441c; --ojo-bg:#fcf0e9;
+  --f-head:"Bitter", Georgia, "Times New Roman", serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --ease-out:cubic-bezier(0.23,1,0.32,1);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#121614; --sheet:#181e1b; --ink:#e6ece9; --muted:#9eaaa4; --line:#2a332f; --grid:#1b2220;
+  --accent:#93b4ff; --accent-soft:#1c2740;
+  --def:#93b4ff; --def-bg:#172238; --teo:#bba9f6; --teo-bg:#221d37;
+  --ej:#72d3a2; --ej-bg:#15281f; --ojo:#f2a37d; --ojo-bg:#2d1d15; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#121614; --sheet:#181e1b; --ink:#e6ece9; --muted:#9eaaa4; --line:#2a332f; --grid:#1b2220;
+  --accent:#93b4ff; --accent-soft:#1c2740;
+  --def:#93b4ff; --def-bg:#172238; --teo:#bba9f6; --teo-bg:#221d37;
+  --ej:#72d3a2; --ej-bg:#15281f; --ojo:#f2a37d; --ojo-bg:#2d1d15; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:1.0625rem;line-height:1.7;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+[id]{scroll-margin-top:24px}
+
+/* Portada */
+.portada{border-bottom:1px solid var(--line);
+  background:linear-gradient(var(--grid) 1px,transparent 1px) 0 0/22px 22px,linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/22px 22px,var(--paper);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 32px}
+.portada-in{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:40px;align-items:center}
+.portada h1{font-family:var(--f-head);font-weight:700;font-size:clamp(2rem,4.6vw,3rem);line-height:1.08;letter-spacing:-.01em;margin:0 0 12px;text-wrap:balance}
+.portada .sub{margin:0 0 6px;color:var(--muted);max-width:56ch}
+.portada .fecha{margin:0;font-weight:700}
+.leyenda{display:flex;flex-wrap:wrap;gap:6px 16px;margin:18px 0 0;padding:0;list-style:none;font-size:.9rem;color:var(--muted)}
+.leyenda li{display:flex;align-items:center;gap:7px}
+.leyenda i{width:12px;height:12px;border-radius:3px}
+.grafico{background:var(--sheet);border:1px solid var(--line);border-radius:14px;padding:12px 12px 6px}
+#graf{display:block;width:100%;height:auto;color:var(--ink)}
+.grafico figcaption{font-size:.85rem;color:var(--muted);padding:4px 4px 6px}
+
+/* Esqueleto */
+.wrap{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:210px minmax(0,1fr);gap:56px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:36px 80px}
+.indice{position:sticky;top:calc(env(safe-area-inset-top,0px) + 24px);align-self:start;font-size:.93rem;display:grid;gap:2px}
+.indice .grupo{font-family:var(--f-head);font-weight:600;font-size:.92rem;color:var(--muted);margin:16px 0 4px}
+.indice .grupo:first-child{margin-top:0}
+.indice a{display:grid;grid-template-columns:28px 1fr;align-items:baseline;padding:4px 8px;margin-left:-8px;border-radius:8px;color:var(--ink);text-decoration:none;line-height:1.35}
+.indice a span{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+@media (hover:hover) and (pointer:fine){.indice a:hover{background:var(--accent-soft);color:var(--accent)}}
+main{min-width:0;max-width:70ch}
+
+/* Bloques y lecciones */
+.bloque{margin-bottom:64px}
+.bloque-head{display:grid;gap:2px;padding-bottom:14px;border-bottom:2px solid var(--ink)}
+.eyebrow{margin:0;font-family:var(--f-head);font-weight:600;color:var(--accent);font-size:1rem}
+.bloque h2{font-family:var(--f-head);font-weight:700;font-size:clamp(1.6rem,3.2vw,2.1rem);line-height:1.15;margin:0;text-wrap:balance}
+.lede{margin:4px 0 0;color:var(--muted)}
+.leccion{padding-top:32px}
+.leccion h3{font-family:var(--f-head);font-weight:600;font-size:1.32rem;line-height:1.25;margin:0 0 12px;display:flex;align-items:center;gap:12px;text-wrap:balance}
+.tag{flex:none;font-family:var(--f-body);font-weight:700;font-size:.8rem;font-variant-numeric:tabular-nums;background:var(--ink);color:var(--paper);border-radius:6px;padding:2px 8px}
+.tag-extra{background:transparent;color:var(--muted);border:1px solid var(--line)}
+h4{font-family:var(--f-head);font-weight:600;font-size:1.08rem;margin:28px 0 8px}
+p{margin:10px 0}
+ul,ol{padding-left:1.3em;margin:10px 0}
+li{margin:4px 0}
+
+/* Cajas: el color dice qué es; sin rieles ni sombras */
+.box{border-radius:12px;padding:14px 18px;margin:16px 0;background:var(--sheet);border:1px solid var(--line)}
+.box>:first-child{margin-top:0}.box>:last-child{margin-bottom:0}
+.box-t{font-weight:700;font-size:.95rem;margin:0 0 4px!important}
+.box.def{background:var(--def-bg);border-color:transparent}.box.def .box-t{color:var(--def)}
+.box.teo{background:var(--teo-bg);border-color:transparent}.box.teo .box-t{color:var(--teo)}
+.box.ej .box-t{color:var(--ej)}
+.box.ojo{background:var(--ojo-bg);border-color:transparent}.box.ojo .box-t{color:var(--ojo)}
+.rta{background:var(--ej-bg);border-radius:8px;padding:8px 12px;margin-top:12px!important}
+
+/* Fórmulas */
+.eq,.enun,.resp{overflow-x:auto;overflow-y:hidden}
+.eq{margin:8px 0}
+mjx-container{font-size:110%!important}
+mjx-container[display="true"]{margin:.5em 0!important}
+
+/* Pasos: secuencia real, por eso numerados */
+ol.pasos{list-style:none;counter-reset:p;padding:0;display:grid;gap:8px}
+ol.pasos li{counter-increment:p;position:relative;padding-left:40px;margin:0;min-width:0}
+ol.pasos li::before{content:counter(p);font-weight:700;font-size:.85rem;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);position:absolute;left:0;top:2px}
+
+/* Tablas */
+.tabla{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:12px;background:var(--sheet)}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:9px 12px;text-align:left;vertical-align:middle;border-bottom:1px solid var(--line)}
+tr:last-child>*{border-bottom:0}
+th{font-family:var(--f-head);font-weight:600;font-size:.95rem;background:var(--paper)}
+
+/* Ejercicios marcados */
+ol.marcados{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+ol.marcados li{margin:0;background:var(--sheet);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:4px;align-content:start;min-width:0}
+ol.marcados .id{font-weight:700;font-size:.85rem;color:var(--accent)}
+
+/* Desplegables: única animación, responde a la acción */
+summary{cursor:pointer;color:var(--accent);font-weight:700;font-size:.92rem;list-style:none;display:inline-flex;align-items:center;gap:8px;border-radius:6px}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";flex:none;width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform 180ms var(--ease-out)}
+details[open]>summary::before{transform:rotate(45deg)}
+@media (prefers-reduced-motion:reduce){summary::before{transition:none}}
+details .resp{margin-top:6px}
+.preguntas{display:grid;gap:10px;margin-top:18px}
+details.q{background:var(--sheet);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+details.q>summary{color:var(--ink);font-size:1rem;display:flex;align-items:baseline}
+details.q>summary::before{color:var(--accent)}
+details.q .resp{border-top:1px solid var(--line);padding-top:8px;margin-top:10px}
+
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.nota{color:var(--muted);font-size:.93rem}
+.pie{color:var(--muted);font-size:.9rem;border-top:1px solid var(--line);padding-top:14px}
+
+/* Móvil */
+@media (max-width:860px){
+  .portada-in{grid-template-columns:minmax(0,1fr);gap:24px}
+  .wrap{grid-template-columns:minmax(0,1fr);gap:0;padding-block:0 64px}
+  .indice{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line);
+    margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:8px max(16px,env(safe-area-inset-left,0px));
+    display:flex;gap:6px;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+  .indice .grupo,.indice a.sub{display:none}
+  .indice a{display:block;margin:0;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.88rem}
+  .indice a span{display:none}
+  main{max-width:none;padding-top:20px}
+  [id]{scroll-margin-top:64px}
+}
+</style>
+</head>
+<body>
+<header class="portada">
+  <div class="portada-in">
+    <div>
+      <h1>Derivadas y sus aplicaciones</h1>
+      <p class="sub">Apunte para el 2do parcial de Análisis Matemático (LAR). Lo que entra: definición, tabla y reglas, análisis de una función, optimización económica y L'Hôpital.</p>
+      <p class="fecha">Parcial: 25 de noviembre. Integrales se suman cuando la profesora las dé.</p>
+      <ul class="leyenda">
+        <li><i style="background:var(--def)"></i>Definición o fórmula</li>
+        <li><i style="background:var(--teo)"></i>Teorema o criterio</li>
+        <li><i style="background:var(--ej)"></i>Ejemplo resuelto</li>
+        <li><i style="background:var(--ojo)"></i>Error típico</li>
+      </ul>
+    </div>
+    <figure class="grafico" style="margin:0">
+      <svg id="graf" viewBox="0 0 440 300" role="img" aria-label="Gráfico de f(x) = x al cubo menos 3x con máximo en (−1, 2), mínimo en (1, −2) e inflexión en (0, 0)"></svg>
+      <figcaption>El ejemplo de clase: \(f(x)=x^3-3x\). Máximo en \((-1;\,2)\), mínimo en \((1;\,-2)\), inflexión en \((0;\,0)\).</figcaption>
+    </figure>
+  </div>
+</header>
+<div class="wrap">
+<nav class="indice" aria-label="Índice">
+  <p class="grupo">Derivadas</p>
+  <a href="#b1" class="top"><span>B1</span>Derivadas</a>
+  <a href="#l1" class="sub"><span>L1</span>Derivada en un punto</a>
+  <a href="#l2" class="sub"><span>L2</span>Tangente y derivabilidad</a>
+  <a href="#l3" class="sub"><span>L3</span>Tabla y regla de la cadena</a>
+  <a href="#l4" class="sub"><span>L4</span>Orden superior y marginal</a>
+  <p class="grupo">Análisis de función</p>
+  <a href="#b2" class="top"><span>B2</span>Análisis de función</a>
+  <a href="#l5" class="sub"><span>L5</span>Crecimiento y extremos</a>
+  <a href="#l6" class="sub"><span>L6</span>Concavidad e inflexión</a>
+  <a href="#l-extra" class="sub"><span>+</span>Rolle, Lagrange, diferencial</a>
+  <p class="grupo">Aplicaciones</p>
+  <a href="#b3" class="top"><span>L7</span>Optimización económica</a>
+  <a href="#b4" class="top"><span>L8</span>Regla de L'Hôpital</a>
+  <p class="grupo">Repaso</p>
+  <a href="#teoria" class="top"><span>?</span>Preguntas teóricas</a>
+</nav>
+<main>
+<section class="bloque" id="b1">
+  <header class="bloque-head">
+    <p class="eyebrow">Bloque 1</p>
+    <h2>Derivadas</h2>
+    <p class="lede">Definir la derivada como límite, interpretarla, calcularla con la tabla y la regla de la cadena, y usarla en orden superior y análisis marginal.</p>
+  </header>
+
+  <article class="leccion" id="l1">
+    <h3><span class="tag">L1</span>Derivada en un punto</h3>
+
+    <div class="box def">
+      <p class="box-t">Definición</p>
+      <p><b>Incremento:</b> \(\Delta x = x_1 - x_0\) (valor final menos valor inicial) y \(\Delta y = f(x_0+\Delta x) - f(x_0)\).</p>
+      <p><b>Cociente incremental</b> (tasa de cambio promedio): pendiente de la <b>secante</b> \(PQ\).</p>
+      <div class="eq">\[ \dfrac{\Delta y}{\Delta x} = \dfrac{f(x+\Delta x) - f(x)}{\Delta x} \]</div>
+      <p><b>Derivada en \(x_0\):</b></p>
+      <div class="eq">\[ f'(x_0) = \lim_{\Delta x \to 0} \dfrac{f(x_0+\Delta x) - f(x_0)}{\Delta x} = \lim_{x \to x_0} \dfrac{f(x) - f(x_0)}{x - x_0} \]</div>
+      <p>Es un <b>número</b>, si el límite existe.</p>
+    </div>
+
+    <p><b>Interpretación.</b> Geométrica: pendiente de la recta tangente en \(P\big(x_0\,;\,f(x_0)\big)\). Como tasa: razón de cambio instantánea de \(y\) respecto de \(x\) (velocidad instantánea, costo marginal).</p>
+
+    <p><b>Regla general de derivación</b> (la función derivada \(f'(x)\) es una función):</p>
+    <ol class="pasos">
+      <li>Incremento: \(\Delta y = f(x+\Delta x) - f(x)\).</li>
+      <li>Cociente incremental: \(\dfrac{\Delta y}{\Delta x} = \dfrac{f(x+\Delta x) - f(x)}{\Delta x}\).</li>
+      <li>Límite: \(f'(x) = \lim_{\Delta x \to 0} \dfrac{\Delta y}{\Delta x}\), si existe.</li>
+    </ol>
+
+    <div class="box ej">
+      <p class="box-t">Ejemplo</p>
+      <p>\(f(x) = x^2\) en \(P(2\,;\,4)\).</p>
+      <div class="eq">\[ \begin{aligned} \Delta y &= (2+\Delta x)^2 - 4 = 4\,\Delta x + \Delta x^2 \\ \dfrac{\Delta y}{\Delta x} &= 4 + \Delta x \\ f'(2) &= \lim_{\Delta x \to 0}\,(4 + \Delta x) = 4 \end{aligned} \]</div>
+      <p>Tangente: \(y - 4 = 4(x-2)\), o sea \(y = 4x - 4\).</p>
+    </div>
+  </article>
+
+  <article class="leccion" id="l2">
+    <h3><span class="tag">L2</span>Tangente, normal y derivabilidad</h3>
+
+    <div class="box def">
+      <p class="box-t">Fórmula</p>
+      <p><b>Tangente</b> en \(x = a\):</p>
+      <div class="eq">\[ y - f(a) = f'(a)\cdot(x - a) \]</div>
+      <p><b>Normal</b> (perpendicular a la tangente), con \(f'(a) \neq 0\):</p>
+      <div class="eq">\[ y - f(a) = -\dfrac{1}{f'(a)}\cdot(x - a), \qquad m_n = -\dfrac{1}{f'(a)} \]</div>
+      <p><b>Derivadas laterales:</b></p>
+      <div class="eq">\[ f'_-(a) = \lim_{x \to a^-} \dfrac{f(x)-f(a)}{x-a}, \qquad f'_+(a) = \lim_{x \to a^+} \dfrac{f(x)-f(a)}{x-a} \]</div>
+    </div>
+
+    <div class="box teo">
+      <p class="box-t">Teorema</p>
+      <p>\(f\) es derivable en \(a\) \(\Leftrightarrow\) \(f'_-(a)\) y \(f'_+(a)\) existen y son <b>iguales</b>.</p>
+      <p><b>Derivable \(\Rightarrow\) continua.</b> La recíproca es <b>falsa</b>.</p>
+    </div>
+
+    <div class="box ej">
+      <p class="box-t">Ejemplo</p>
+      <p>Contraejemplo: \(f(x) = |x-1|\) en \(x = 1\).</p>
+      <p>Es continua: \(\lim_{x \to 1}|x-1| = 0 = f(1)\). Pero \(f'_+(1) = 1\) y \(f'_-(1) = -1\), distintas. No es derivable: hay un pico (punto anguloso).</p>
+    </div>
+
+    <p><b>Casos de no derivabilidad en un punto:</b></p>
+    <ul>
+      <li>Discontinuidad (salto, hueco). Si no es continua, no es derivable.</li>
+      <li>Pico o esquina (laterales distintas), como \(|x|\) o \(|x-1|\).</li>
+      <li>Tangente vertical (el límite da infinito), como \(\sqrt{x}\) en \(x = 0\).</li>
+    </ul>
+
+    <div class="box ojo">
+      <p class="box-t">Ojo</p>
+      <ul>
+        <li>"Continua" no alcanza para "derivable".</li>
+        <li>Si la función no está definida o es discontinua en el punto, no es derivable ahí.</li>
+      </ul>
+    </div>
+  </article>
+
+  <article class="leccion" id="l3">
+    <h3><span class="tag">L3</span>Tabla de derivadas y regla de la cadena</h3>
+
+    <p>\(u\) y \(v\) son expresiones en \(x\). <b>Cada fila ya incluye la regla de la cadena</b> (siempre aparece \(u'\)).</p>
+
+    <div class="tabla">
+      <table>
+        <tr><th>Propiedades básicas</th><th>Derivada</th></tr>
+        <tr><td>\(y = k\cdot u \quad (k \in \mathbb{R})\)</td><td>\(y' = k\cdot u'\)</td></tr>
+        <tr><td>\(y = u \pm v\)</td><td>\(y' = u' \pm v'\)</td></tr>
+        <tr><td>\(y = u\cdot v\)</td><td>\(y' = u'\cdot v + u\cdot v'\)</td></tr>
+        <tr><td>\(y = \dfrac{u}{v} \quad (v \neq 0)\)</td><td>\(y' = \dfrac{u'\cdot v - u\cdot v'}{v^2}\)</td></tr>
+      </table>
+    </div>
+
+    <div class="tabla">
+      <table>
+        <tr><th>Función</th><th>Derivada</th><th>Ejemplo</th><th>Derivada del ejemplo</th></tr>
+        <tr><td>\(y = k\) (constante)</td><td>\(y' = 0\)</td><td>\(y = 5\)</td><td>\(y' = 0\)</td></tr>
+        <tr><td>\(y = x\)</td><td>\(y' = 1\)</td><td>\(y = 4x\)</td><td>\(y' = 4\)</td></tr>
+        <tr><td>\(y = u^n\)</td><td>\(y' = n\cdot u^{n-1}\cdot u'\)</td><td>\(y = (2x+7)^4\)</td><td>\(y' = 8(2x+7)^3\)</td></tr>
+        <tr><td>\(y = \sqrt{u}\)</td><td>\(y' = \dfrac{u'}{2\sqrt{u}}\)</td><td>\(y = \sqrt{3x}\)</td><td>\(y' = \dfrac{3}{2\sqrt{3x}}\)</td></tr>
+        <tr><td>\(y = \sqrt[n]{u}\)</td><td>\(y' = \dfrac{u'}{n\cdot\sqrt[n]{u^{n-1}}}\)</td><td>\(y = \sqrt[4]{7x}\)</td><td>\(y' = \dfrac{7}{4\cdot\sqrt[4]{(7x)^3}}\)</td></tr>
+        <tr><td>\(y = e^u\)</td><td>\(y' = u'\cdot e^u\)</td><td>\(y = e^{4x+5}\)</td><td>\(y' = 4e^{4x+5}\)</td></tr>
+        <tr><td>\(y = a^u\)</td><td>\(y' = u'\cdot a^u\cdot\ln a\)</td><td>\(y = 3^{7x-5}\)</td><td>\(y' = 7\cdot 3^{7x-5}\cdot\ln 3\)</td></tr>
+        <tr><td>\(y = \ln u\)</td><td>\(y' = \dfrac{u'}{u}\)</td><td>\(y = \ln(2x+7)\)</td><td>\(y' = \dfrac{2}{2x+7}\)</td></tr>
+        <tr><td>\(y = \log_a u\)</td><td>\(y' = \dfrac{u'}{u}\cdot\log_a e = \dfrac{u'}{u}\cdot\dfrac{1}{\ln a}\)</td><td>\(y = \log_2(3x+4)\)</td><td>\(y' = \dfrac{3}{3x+4}\cdot\log_2 e\)</td></tr>
+      </table>
+    </div>
+
+    <p>Casos particulares con \(u = x\) (guía 6): \((x^n)' = n\cdot x^{n-1}\); \((\ln x)' = \frac{1}{x}\); \((e^x)' = e^x\); \((a^x)' = a^x\cdot\ln a\).</p>
+
+    <div class="box teo">
+      <p class="box-t">Teorema</p>
+      <p><b>Regla de la cadena</b> (cátedra): si \(f\) y \(g\) son derivables, \(y = f(g(x))\) es derivable y</p>
+      <div class="eq">\[ y' = f'\big(g(x)\big)\cdot g'(x) \]</div>
+      <p>Con \(y = f(u)\), \(u = g(x)\): \(y' = f'(u)\cdot u'\). Se deriva "de afuera hacia adentro" (como pelar una cebolla).</p>
+      <p>Ejemplo de la guía: \(y = (3x-5)^{20} \Rightarrow y' = 20(3x-5)^{19}\cdot 3 = 60(3x-5)^{19}\).</p>
+    </div>
+
+    <p><b>Método de 4 pasos</b> (guía de la tabla):</p>
+    <ol class="pasos">
+      <li>Reconocer la forma externa (potencia, raíz, exponencial, logaritmo, producto, cociente) y elegir la fila.</li>
+      <li>Identificar \(u\) (y \(v\) si hay).</li>
+      <li>Calcular \(u'\) (y \(v'\)).</li>
+      <li>Reemplazar en la fila de la tabla y simplificar.</li>
+    </ol>
+    <p>Truco: si hay \(x\) en el denominador o en una raíz, reescribir como potencia antes de derivar: \(\dfrac{4}{x^3} = 4x^{-3}\); \(\dfrac{6}{\sqrt{x}} = 6x^{-1/2}\).</p>
+
+    <div class="box ej">
+      <p class="box-t">Ejemplo</p>
+      <p>Cociente: \(y = \dfrac{2x+1}{x^2+3}\), con \(u = 2x+1\), \(u' = 2\), \(v = x^2+3\), \(v' = 2x\).</p>
+      <div class="eq">\[ \begin{aligned} y' &= \dfrac{2(x^2+3) - 2x(2x+1)}{(x^2+3)^2} \\ &= \dfrac{-2x^2 - 2x + 6}{(x^2+3)^2} \end{aligned} \]</div>
+    </div>
+
+    <div class="box ej">
+      <p class="box-t">Ejemplo</p>
+      <p>Cadena con raíz: \(y = \sqrt{e^{2x}+1}\). Fila \(\sqrt{u}\), con \(u = e^{2x}+1\), \(u' = 2e^{2x}\).</p>
+      <div class="eq">\[ \begin{aligned} y' &= \dfrac{2e^{2x}}{2\sqrt{e^{2x}+1}} \\ &= \dfrac{e^{2x}}{\sqrt{e^{2x}+1}} \end{aligned} \]</div>
+    </div>
+
+    <h4>Ejercicios marcados por la profesora</h4>
+    <p class="nota">Son los 18 con círculo fucsia, de la guía de la tabla de derivadas. Resolvé primero, después abrí la respuesta.</p>
+    <ol class="marcados">
+      <li><span class="id">A2</span><div class="enun">\(y = x^3 - 5x^2 + 2x - 9\)</div><details><summary>Ver respuesta</summary><div class="resp">\(y' = 3x^2 - 10x + 2\)</div></details></li>
+      <li><span class="id">A4</span><div class="enun">\(y = (x^2 + 4x)^3\)</div><details><summary>Ver respuesta</summary><div class="resp">\(y' = 3(x^2 + 4x)^2\cdot(2x + 4)\)</div></details></li>
+      <li><span class="id">A6</span><div class="enun">\(y = \sqrt[3]{2x - 7}\)</div><details><summary>Ver respuesta</summary><div class="resp">\(y' = \dfrac{2}{3\cdot\sqrt[3]{(2x - 7)^2}}\)</div></details></li>
+      <li><span class="id">A7</span><div class="enun">\(y = \dfrac{4}{x^3}\)</div><details><summary>Ver respuesta</summary><div class="resp">\(y = 4x^{-3}\), entonces \(y' = -\dfrac{12}{x^4}\)</div></details></li>
+      <li><span class="id">A8</span><div class="enun">\(y = \dfrac{6}{\sqrt{x}}\)</div><details><summary>Ver respuesta</summary><div class="resp">\(y = 6x^{-1/2}\), entonces \(y' = -\dfrac{3}{\sqrt{x^3}}\)</div></details></li>
+      <li><span class="id">B1</span><div class="enun">\(y = e^{3x-1}\)</div><details><summary>Ver respuesta</summary><div class="resp">\(y' = 3e^{3x-1}\)</div></details></li>
+      <li><span class="id">B3</span><div class="enun">\(y = 2^{4x+1}\)</div><details><summary>Ver respuesta</summary><div class="resp">\(y' = 4\cdot 2^{4x+1}\cdot\ln 2\)</div></details></li>
+      <li><span class="id">B5</span><div class="enun">\(y = \ln(4x - 3)\)</div><details><summary>Ver respuesta</summary><div class="resp">\(y' = \dfrac{4}{4x - 3}\)</div></details></li>
+      <li><span class="id">B7</span><div class="enun">\(y = \log_3(5x^2 + 1)\)</div><details><summary>Ver respuesta</summary><div class="resp">\(y' = \dfrac{10x}{(5x^2 + 1)\cdot\ln 3}\)</div></details></li>
+      <li><span class="id">C1</span><div class="enun">\(y = 3e^{2x} - 4\ln x\)</div><details><summary>Ver respuesta</summary><div class="resp">\(y' = 6e^{2x} - \dfrac{4}{x}\)</div></details></li>
+      <li><span class="id">C3</span><div class="enun">\(y = \dfrac{x^4}{2} - 3\cdot 2^x\)</div><details><summary>Ver respuesta</summary><div class="resp">\(y' = 2x^3 - 3\cdot 2^x\cdot\ln 2\)</div></details></li>
+      <li><span class="id">C4</span><div class="enun">\(y = 2\ln(x^2 + 1) + e^{-x}\)</div><details><summary>Ver respuesta</summary><div class="resp">\(y' = \dfrac{4x}{x^2 + 1} - e^{-x}\)</div></details></li>
+      <li><span class="id">C6</span><div class="enun">\(y = 4(5 - x)^3 - \dfrac{1}{2}e^{4x}\)</div><details><summary>Ver respuesta</summary><div class="resp">\(y' = -12(5 - x)^2 - 2e^{4x}\) (el \(-1\) sale de la derivada de \(5 - x\))</div></details></li>
+      <li><span class="id">C8</span><div class="enun">\(y = \ln(2x) - \ln(x + 5)\)</div><details><summary>Ver respuesta</summary><div class="resp">\(y' = \dfrac{1}{x} - \dfrac{1}{x + 5}\)</div></details></li>
+      <li><span class="id">D2</span><div class="enun">\(y = (2x + 1)\cdot\ln x\)</div><details><summary>Ver respuesta</summary><div class="resp">\(y' = 2\ln x + \dfrac{2x + 1}{x}\)</div></details></li>
+      <li><span class="id">D3</span><div class="enun">\(y = x\cdot\sqrt{x + 4}\)</div><details><summary>Ver respuesta</summary><div class="resp">\(y' = \sqrt{x + 4} + \dfrac{x}{2\sqrt{x + 4}} = \dfrac{3x + 8}{2\sqrt{x + 4}}\)</div></details></li>
+      <li><span class="id">D5</span><div class="enun">\(y = \dfrac{x^2 + 1}{x - 3}\)</div><details><summary>Ver respuesta</summary><div class="resp">\(y' = \dfrac{x^2 - 6x - 1}{(x - 3)^2}\)</div></details></li>
+      <li><span class="id">D7</span><div class="enun">\(y = \dfrac{e^{2x}}{x + 1}\)</div><details><summary>Ver respuesta</summary><div class="resp">\(y' = \dfrac{e^{2x}\cdot(2x + 1)}{(x + 1)^2}\)</div></details></li>
+    </ol>
+
+    <div class="box ojo">
+      <p class="box-t">Ojo</p>
+      <ul>
+        <li><b>Errata de la Guía 6 (cociente):</b> la fórmula impresa en la p. 17 tiene signo <b>+</b> en el numerador. Está mal. Lo correcto es \(y' = \dfrac{u'\cdot v - u\cdot v'}{v^2}\), con signo <b>menos</b>. El texto en palabras de la guía y la tabla de la cátedra ya dicen "menos".</li>
+        <li>Cociente: el orden importa (\(u'v - uv'\)). Invertido, cambia el signo.</li>
+        <li>Producto: \((u\cdot v)'\) NO es \(u'\cdot v'\). Es \(u'v + uv'\).</li>
+        <li>Olvidar \(u'\) es el error más frecuente: \((3x-5)^{20} \to 20(3x-5)^{19}\cdot\mathbf{3}\).</li>
+        <li>\(a^u\) lleva \(\ln a\); \(e^u\) no. \((a^x)'\) no es \(x\cdot a^{x-1}\).</li>
+        <li>Constante sumando: derivada \(0\). Constante multiplicando: se conserva.</li>
+        <li>\(\dfrac{4}{x^3}\), \(\dfrac{6}{\sqrt{x}}\): pasar a potencia antes de derivar (\(-3 - 1 = -4\)).</li>
+      </ul>
+    </div>
+  </article>
+
+  <article class="leccion" id="l4">
+    <h3><span class="tag">L4</span>Orden superior y análisis marginal</h3>
+
+    <div class="box def">
+      <p class="box-t">Definición</p>
+      <p><b>Derivadas sucesivas:</b> \(f'' = (f')'\), \(f''' = (f'')'\) y, en general, \(f^{(n)} = \big(f^{(n-1)}\big)'\). El número va entre paréntesis para no confundirlo con un exponente (se usa si \(n &gt; 3\)).</p>
+      <p><b>Análisis marginal</b> (tasas de cambio en economía):</p>
+      <div class="eq">\[ CMg = \dfrac{dC}{dq}, \qquad IMg = \dfrac{dI}{dq} \]</div>
+      <p>\(C(q)\) es el costo e \(I(q)\) el ingreso, con \(q\) = unidades. Son tasas de cambio instantáneas respecto de la cantidad producida.</p>
+    </div>
+
+    <div class="box ej">
+      <p class="box-t">Ejemplo</p>
+      <p>Orden superior: \(y = x^3 - 2x^2 + 5x\).</p>
+      <div class="eq">\[ \begin{aligned} y' &= 3x^2 - 4x + 5 \\ y'' &= 6x - 4 \\ y''' &= 6 \end{aligned} \]</div>
+    </div>
+
+    <div class="box ej">
+      <p class="box-t">Ejemplo</p>
+      <p>Marginal (Act. 30 de la guía): \(C(q) = 10q^2 - 5q\), \(I(q) = 6q^2 + 18q\).</p>
+      <div class="eq">\[ \begin{aligned} CMg &= 20q - 5 \\ IMg &= 12q + 18 \end{aligned} \]</div>
+      <p>Con \(q = 7\): \(CMg = 135\) e \(IMg = 102\). Como \(IMg &lt; CMg\), producir una unidad más no conviene (suma menos ingreso que costo).</p>
+    </div>
+  </article>
+</section>
+
+<section class="bloque" id="b2">
+<header class="bloque-head"><p class="eyebrow">Bloque 2</p><h2>Análisis de una función</h2><p class="lede">Usar la primera y la segunda derivada para saber dónde crece, dónde tiene extremos y cómo se curva una función.</p></header>
+
+<article class="leccion" id="l5">
+<h3><span class="tag">L5</span>Crecimiento, extremos y criterio de la 1ª derivada</h3>
+
+<h4>Crecimiento y decrecimiento</h4>
+<div class="box teo">
+<p class="box-t">Teorema</p>
+<p><b>1 (de la función a la derivada).</b> Si \(f\) es derivable y creciente, entonces \(f'(x) \geq 0\). Si es decreciente, \(f'(x) \leq 0\).</p>
+<p><b>2 (de la derivada a la función).</b> En un intervalo del dominio: si \(f'(x) \gt 0\) para todo \(x\) del intervalo, \(f\) es <b>creciente</b>. Si \(f'(x) \lt 0\), es <b>decreciente</b>.</p>
+</div>
+<p>Se usa el Teorema 2: se mira el <b>signo de \(f'\)</b>. En el Teorema 1 va \(\geq\) porque \(x^3\) crece y sin embargo \(f'(0) = 0\).</p>
+<div class="box ej">
+<p class="box-t">Ejemplo</p>
+<p>\(f(x) = x^3 - 3x\). Entonces \(f'(x) = 3x^2 - 3 = 3(x-1)(x+1)\), y \(f'(x) = 0\) en \(x = -1\) y \(x = 1\).</p>
+<div class="tabla"><table>
+<tr><th>Intervalo</th><td>\((-\infty\,;\,-1)\)</td><td>\((-1\,;\,1)\)</td><td>\((1\,;\,\infty)\)</td></tr>
+<tr><th>Punto de prueba</th><td>\(-2\)</td><td>\(0\)</td><td>\(2\)</td></tr>
+<tr><th>Signo de \(f'\)</th><td>\(f'(-2) = 9\) (+)</td><td>\(f'(0) = -3\) (−)</td><td>\(f'(2) = 9\) (+)</td></tr>
+<tr><th>\(f\)</th><td>crece</td><td>decrece</td><td>crece</td></tr>
+</table></div>
+</div>
+<div class="box ojo">
+<p class="box-t">Ojo</p>
+<p>En la tabla se evalúa \(f'\) (la derivada), no \(f\). Por ejemplo, \(f'(-2) = 9\) pero \(f(-2) = -2\).</p>
+</div>
+
+<h4>Extremos locales y puntos críticos</h4>
+<div class="box def">
+<p class="box-t">Definición</p>
+<p><b>Máximo local</b> en \(x = c\): \(f(c) \gt f(x)\) para todo \(x\) suficientemente cerca de \(c\).</p>
+<p><b>Mínimo local</b> en \(x = c\): \(f(c) \lt f(x)\) para todo \(x\) suficientemente cerca de \(c\).</p>
+<p><b>Punto crítico</b>: \(x = c\) del dominio donde \(f'(c) = 0\) <b>o</b> \(f'(c)\) no existe (pico o cúspide).</p>
+<p><b>Condición necesaria</b>: si \(f\) es derivable en \(c\) y tiene un extremo local en \(c\), entonces \(f'(c) = 0\). Los extremos hay que buscarlos entre los puntos críticos.</p>
+</div>
+<div class="box ojo">
+<p class="box-t">Ojo</p>
+<ul>
+<li><b>No todo punto crítico es extremo.</b> \(f(x) = x^3\) tiene \(f'(0) = 0\) pero crece a ambos lados: no hay máximo ni mínimo.</li>
+<li>Un extremo puede estar donde \(f'\) no existe: \(f(x) = |x|\) tiene mínimo en \(0\).</li>
+<li>\(c\) debe estar en el dominio: en \(f(x) = \frac{1}{x}\), \(x = 0\) no es punto crítico.</li>
+</ul>
+</div>
+<div class="box ej">
+<p class="box-t">Ejemplo</p>
+<p>\(f(x) = |x-1|\): en \(x = 1\) no existe \(f'\) (pico) y está en el dominio, así que \(x = 1\) es crítico (y es mínimo).</p>
+<p>\(f(x) = x^3 + 3x^2\):</p>
+<div class="eq">\[ f'(x) = 3x^2 + 6x = 3x(x+2) = 0 \;\Rightarrow\; x = 0 \;\text{ y }\; x = -2 \]</div>
+</div>
+
+<h4>Criterio de la 1ª derivada</h4>
+<div class="box teo">
+<p class="box-t">Criterio</p>
+<p>Sea \(c\) un punto crítico. Se mira cómo cambia el signo de \(f'\) al pasar por \(c\):</p>
+<ul>
+<li>\(f'\) pasa de <b>+ a −</b>: <b>máximo local</b> en \(c\).</li>
+<li>\(f'\) pasa de <b>− a +</b>: <b>mínimo local</b> en \(c\).</li>
+<li>\(f'\) <b>no cambia de signo</b>: no hay extremo en \(c\).</li>
+</ul>
+</div>
+<ol class="pasos">
+<li>Calcular \(f'(x)\).</li>
+<li>Hallar los puntos críticos (\(f' = 0\) o \(f'\) no existe).</li>
+<li>Armar la tabla de signos con un punto de prueba en cada intervalo.</li>
+<li>Clasificar cada punto crítico por el cambio de signo.</li>
+<li>Calcular la ordenada \(f(c)\) para dar el punto \((c\,;\,f(c))\).</li>
+</ol>
+<div class="box ej">
+<p class="box-t">Ejemplo</p>
+<p>Con la tabla anterior, para \(f(x) = x^3 - 3x\):</p>
+<ul>
+<li>En \(x = -1\) pasa de + a −: máximo local, \(f(-1) = -1 + 3 = 2\).</li>
+<li>En \(x = 1\) pasa de − a +: mínimo local, \(f(1) = 1 - 3 = -2\).</li>
+</ul>
+</div>
+</article>
+
+<article class="leccion" id="l6">
+<h3><span class="tag">L6</span>Concavidad, inflexión y criterio de la 2ª derivada</h3>
+
+<h4>Concavidad y punto de inflexión</h4>
+<div class="box def">
+<p class="box-t">Definición</p>
+<ul>
+<li>\(f''(x) \gt 0\) en un intervalo: \(f\) es <b>cóncava hacia arriba</b> (+), forma \(\cup\).</li>
+<li>\(f''(x) \lt 0\) en un intervalo: \(f\) es <b>cóncava hacia abajo</b> (−), forma \(\cap\).</li>
+</ul>
+<p><b>Punto de inflexión</b>: punto donde la curva <b>cambia de concavidad</b> (la tangente la atraviesa). Los candidatos son \(f''(c) = 0\) o \(f''(c)\) no existe. Es inflexión solo si <b>\(f''\) cambia de signo</b> en \(c\).</p>
+</div>
+<div class="box ojo">
+<p class="box-t">Ojo</p>
+<ul>
+<li>\(f''(c) = 0\) solo da un <b>candidato</b>. Con \(f(x) = x^4\): \(f''(x) = 12x^2\) y \(f''(0) = 0\), pero \(f''\) es positiva a ambos lados: no hay inflexión.</li>
+<li>La concavidad no depende de si \(f\) crece o decrece.</li>
+</ul>
+</div>
+<div class="box ej">
+<p class="box-t">Ejemplo</p>
+<p>\(f(x) = x^3 - 3x\): \(f''(x) = 6x = 0\) en \(x = 0\).</p>
+<div class="tabla"><table>
+<tr><th>Intervalo</th><td>\((-\infty\,;\,0)\)</td><td>\((0\,;\,\infty)\)</td></tr>
+<tr><th>Punto de prueba</th><td>\(-1\)</td><td>\(1\)</td></tr>
+<tr><th>\(f''\)</th><td>\(f''(-1) = -6\) (−)</td><td>\(f''(1) = 6\) (+)</td></tr>
+<tr><th>Concavidad</th><td>hacia abajo \(\cap\)</td><td>hacia arriba \(\cup\)</td></tr>
+</table></div>
+<p>\(f''\) cambia de signo: inflexión en \(x = 0\), con \(f(0) = 0\), es decir \((0\,;\,0)\).</p>
+</div>
+
+<h4>Criterio de la 2ª derivada</h4>
+<div class="box teo">
+<p class="box-t">Criterio</p>
+<p>Si \(f'(c) = 0\):</p>
+<ul>
+<li>\(f''(c) \gt 0\): <b>mínimo local</b> en \(c\).</li>
+<li>\(f''(c) \lt 0\): <b>máximo local</b> en \(c\).</li>
+<li>\(f''(c) = 0\): <b>no decide</b>. Usar el criterio de la 1ª derivada.</li>
+</ul>
+</div>
+<div class="box ej">
+<p class="box-t">Ejemplo</p>
+<p>\(f(x) = x^3 - 3x\): \(f''(-1) = -6 \lt 0\), máximo en \(x = -1\). \(f''(1) = 6 \gt 0\), mínimo en \(x = 1\).</p>
+</div>
+<div class="box ojo">
+<p class="box-t">Ojo</p>
+<p>Si \(f' = 0\) y \(f'' = 0\), no se puede concluir "mínimo". Con \(x^3\) no hay extremo y con \(x^4\) hay mínimo. Se resuelve con el signo de \(f'\).</p>
+</div>
+
+<h4>Procedimiento completo</h4>
+<ol class="pasos">
+<li>Dominio de \(f\).</li>
+<li>Calcular \(f'\), igualar a 0 y ver también dónde no existe: puntos críticos.</li>
+<li>Signo de \(f'\) en cada intervalo: crece o decrece.</li>
+<li>Clasificar los puntos críticos (1ª derivada, o 2ª derivada si \(f'' \neq 0\)).</li>
+<li>Ordenadas de los extremos: \(f(c)\).</li>
+<li>Calcular \(f''\) e igualar a 0: candidatos a inflexión.</li>
+<li>Signo de \(f''\) en cada intervalo: concavidad. Hay inflexión si cambia de signo.</li>
+<li>Con todo, trazar la gráfica.</li>
+</ol>
+<div class="box ej">
+<p class="box-t">Ejemplo</p>
+<p>\(f(x) = x^3 - 3x\). Dominio: todos los reales. Además \(f'(x) = 3x^2 - 3 = 0 \Rightarrow x = \pm 1\) y \(f''(x) = 6x\).</p>
+<div class="tabla"><table>
+<tr><th>Elemento</th><td>Resultado</td></tr>
+<tr><th>Crece</th><td>\((-\infty\,;\,-1)\) y \((1\,;\,\infty)\)</td></tr>
+<tr><th>Decrece</th><td>\((-1\,;\,1)\)</td></tr>
+<tr><th>Máximo local</th><td>\((-1\,;\,2)\)</td></tr>
+<tr><th>Mínimo local</th><td>\((1\,;\,-2)\)</td></tr>
+<tr><th>Cóncava hacia abajo (\(\cap\))</th><td>\((-\infty\,;\,0)\)</td></tr>
+<tr><th>Cóncava hacia arriba (\(\cup\))</th><td>\((0\,;\,\infty)\)</td></tr>
+<tr><th>Punto de inflexión</th><td>\((0\,;\,0)\)</td></tr>
+</table></div>
+</div>
+<div class="box ej">
+<p class="box-t">Ejemplo (Guía 7)</p>
+<p>\(f(x) = \frac{1}{3}x^3 + x^2 + 1\):</p>
+<div class="eq">\[ f'(x) = x^2 + 2x = x(x+2) = 0 \;\Rightarrow\; x = -2 \;\text{ y }\; x = 0 \]</div>
+<p>\(f'\) es + en \((-\infty\,;\,-2)\), − en \((-2\,;\,0)\) y + en \((0\,;\,\infty)\).</p>
+<ul>
+<li>Máximo en \(x = -2\): \(f(-2) = -\frac{8}{3} + 4 + 1 = \frac{7}{3}\).</li>
+<li>Mínimo en \(x = 0\): \(f(0) = 1\).</li>
+</ul>
+<p>Los valores \(-3\), \(-1\) y \(1\) son solo puntos de prueba, no extremos.</p>
+</div>
+</article>
+
+<article class="leccion" id="l-extra">
+<h3><span class="tag tag-extra">Extra</span>Rolle, Lagrange y diferencial</h3>
+<div class="box teo">
+<p class="box-t">Teorema</p>
+<p><b>Rolle.</b> Si \(f\) es continua en \([a\,;\,b]\), derivable en \((a\,;\,b)\) y \(f(a) = f(b)\), existe \(c \in (a\,;\,b)\) con \(f'(c) = 0\) (tangente horizontal).</p>
+<p><b>Lagrange (valor medio).</b> Si \(f\) es continua en \([a\,;\,b]\) y derivable en \((a\,;\,b)\), existe \(c \in (a\,;\,b)\) con (tangente paralela a la secante):</p>
+<div class="eq">\[ f'(c) = \dfrac{f(b) - f(a)}{b - a} \]</div>
+</div>
+<div class="box def">
+<p class="box-t">Definición</p>
+<p><b>Diferencial.</b> \(dy = f'(x)\,dx\), con \(dx = \Delta x\). Sirve para aproximar \(\Delta y\) cuando \(\Delta x\) es chico.</p>
+</div>
+<div class="box ej">
+<p class="box-t">Ejemplo</p>
+<p><b>Rolle:</b> \(f(x) = x^2 - 4x + 3\) en \([1\,;\,3]\). Se cumple \(f(1) = f(3) = 0\) y \(f'(c) = 2c - 4 = 0\), entonces \(c = 2\).</p>
+<p><b>Lagrange:</b> \(f(x) = \sqrt{x}\) en \([1\,;\,9]\):</p>
+<div class="eq">\[ \dfrac{3 - 1}{9 - 1} = \dfrac{1}{4} = \dfrac{1}{2\sqrt{c}} \;\Rightarrow\; c = 4 \]</div>
+<p><b>Diferencial:</b> \(C(x) = 500 + 20x + 0{,}5x^2\), de 100 a 101 unidades:</p>
+<div class="eq">\[ dC = (20 + x)\,dx = 120 \]</div>
+<p>El cambio real es \(C(101) - C(100) = 120{,}5\).</p>
+</div>
+<div class="box ojo">
+<p class="box-t">Ojo</p>
+<p>Rolle y Lagrange exigen continuidad en el intervalo <b>cerrado</b> y derivabilidad en el <b>abierto</b>. En Rolle además \(f(a) = f(b)\).</p>
+</div>
+</article>
+</section>
+
+<section class="bloque" id="b3">
+<header class="bloque-head"><p class="eyebrow">Bloque 3</p><h2>Optimización económica</h2><p class="lede">Aplicar los criterios de derivadas para maximizar la utilidad o minimizar el costo.</p></header>
+
+<article class="leccion" id="l7">
+<h3><span class="tag">L7</span>Ingreso, costo y utilidad</h3>
+
+<h4>Términos</h4>
+<div class="box def">
+<p class="box-t">Definición</p>
+<p>\(x\) = cantidad producida y vendida; \(p\) = precio (puede depender de \(x\)).</p>
+<ul>
+<li><b>Ingreso:</b> \(I(x) = p \cdot x\).</li>
+<li><b>Costo:</b> \(C(x)\) (dato).</li>
+<li><b>Utilidad (o beneficio):</b> \(U(x) = I(x) - C(x)\).</li>
+<li><b>Marginales</b> (derivadas): \(I'(x)\) ingreso marginal, \(C'(x)\) costo marginal y \(U'(x) = I'(x) - C'(x)\) utilidad marginal. Indican cuánto cambia la magnitud por una unidad más.</li>
+</ul>
+</div>
+
+<h4>Pasos para optimizar</h4>
+<ol class="pasos">
+<li>Identificar los datos y qué pide el problema (máx. utilidad, mín. costo).</li>
+<li>Armar la función objetivo en una sola variable (por ejemplo, \(U = I - C\)).</li>
+<li>Derivar e igualar a 0: \(U'(x) = 0\). Resolver.</li>
+<li>Confirmar con la 2ª derivada: \(U''(x) \lt 0\) es máximo (si pide mínimo, \(U'' \gt 0\)).</li>
+<li>Calcular el valor óptimo \(U(x)\) y responder con unidades.</li>
+</ol>
+<div class="box ojo">
+<p class="box-t">Ojo</p>
+<p>\(U' = 0\) puede dar varias soluciones (por ejemplo \(x = 0\) y \(x = 2000\)). Se clasifica cada una con \(U''\). Descartar valores negativos de \(x\).</p>
+</div>
+
+<h4>Dónde crecen I, C y U (Actividad 2 a)</h4>
+<div class="box ej">
+<p class="box-t">Ejemplo</p>
+<p>\(C(x) = 4000 + x^2\); \(p = 100 - \frac{1}{2}x\); \(x \geq 0\).</p>
+<p><b>a) Ingreso:</b></p>
+<div class="eq">\[ \begin{aligned} I(x) &= \left(100 - \tfrac{x}{2}\right)x = 100x - \tfrac{1}{2}x^2 \\ I'(x) &= 100 - x = 0 \;\Rightarrow\; x = 100 \end{aligned} \]</div>
+<p>\(I\) crece en \((0\,;\,100)\) y decrece en \((100\,;\,\infty)\).</p>
+<p><b>b) Costo:</b> \(C'(x) = 2x \gt 0\) para \(x \gt 0\): \(C\) crece siempre.</p>
+<p><b>c) Utilidad:</b></p>
+<div class="eq">\[ \begin{aligned} U(x) &= 100x - \tfrac{1}{2}x^2 - 4000 - x^2 = -\tfrac{3}{2}x^2 + 100x - 4000 \\ U'(x) &= 100 - 3x = 0 \;\Rightarrow\; x = \dfrac{100}{3} \approx 33{,}3 \end{aligned} \]</div>
+<p>\(U\) crece en \((0\,;\,\frac{100}{3})\) y decrece en \((\frac{100}{3}\,;\,\infty)\).</p>
+</div>
+
+<h4>Problema 1: precio \(\$6\)</h4>
+<div class="box ej">
+<p class="box-t">Ejemplo</p>
+<p>Se vende todo a \(\$6\). \(C(x) = 1000 + 6x - 0{,}003x^2 + 10^{-6}x^3\). ¿Qué \(x\) maximiza la utilidad?</p>
+<div class="eq">\[ \begin{aligned}
+I(x) &= 6x \\
+U(x) &= 6x - 1000 - 6x + 0{,}003x^2 - 10^{-6}x^3 = -1000 + 0{,}003x^2 - 10^{-6}x^3 \\
+U'(x) &= 0{,}006x - 3 \cdot 10^{-6}x^2 = x\,(0{,}006 - 0{,}000003x) = 0 \\
+&\Rightarrow\; x = 0 \;\text{ o }\; x = \dfrac{0{,}006}{0{,}000003} = 2000 \\
+U''(x) &= 0{,}006 - 0{,}000006x \\
+U''(0) &= 0{,}006 \gt 0 \;\Rightarrow\; \text{mínimo} \quad (U(0) = -1000) \\
+U''(2000) &= 0{,}006 - 0{,}012 = -0{,}006 \lt 0 \;\Rightarrow\; \text{máximo} \\
+U(2000) &= -1000 + 0{,}003 \cdot 4\,000\,000 - 10^{-6} \cdot 8\,000\,000\,000 \\
+&= -1000 + 12\,000 - 8000 = 3000
+\end{aligned} \]</div>
+<p class="rta"><b>Respuesta:</b> producir y vender 2000 artículos por semana; utilidad máxima \(\$3000\).</p>
+</div>
+
+<h4>Problema 2: precio \(\$4\)</h4>
+<div class="box ej">
+<p class="box-t">Ejemplo</p>
+<p>Se vende todo a \(\$4\). \(C = 50 + 1{,}3x + 0{,}001x^2\).</p>
+<p><b>a)</b> Utilidad:</p>
+<div class="eq">\[ P(x) = 4x - C = -50 + 2{,}7x - 0{,}001x^2 \]</div>
+<p><b>b)</b> Máximo:</p>
+<div class="eq">\[ \begin{aligned} P'(x) &= 2{,}7 - 0{,}002x = 0 \;\Rightarrow\; x = \dfrac{2{,}7}{0{,}002} = 1350 \\ P''(x) &= -0{,}002 \lt 0 \text{ siempre} \;\Rightarrow\; \text{máximo} \end{aligned} \]</div>
+<p><b>c)</b> Utilidad máxima:</p>
+<div class="eq">\[ \begin{aligned} P(1350) &= -50 + 2{,}7 \cdot 1350 - 0{,}001 \cdot 1\,822\,500 \\ &= -50 + 3645 - 1822{,}5 = 1772{,}5 \end{aligned} \]</div>
+<p class="rta"><b>Respuesta:</b> \(x = 1350\) unidades; utilidad máxima \(\$1772{,}5\).</p>
+</div>
+</article>
+</section>
+
+<section class="bloque" id="b4">
+<header class="bloque-head"><p class="eyebrow">Bloque 4</p><h2>Regla de L'Hôpital</h2><p class="lede">Resolver límites indeterminados derivando numerador y denominador.</p></header>
+
+<article class="leccion" id="l8">
+<h3><span class="tag">L8</span>L'Hôpital</h3>
+<div class="box teo">
+<p class="box-t">Teorema</p>
+<p>Sean \(f\) y \(g\) derivables en un entorno reducido de \(a\), con \(g'(x) \neq 0\) en ese entorno. Si
+
+\(\lim_{x \to a} f(x) = 0\) y \(\lim_{x \to a} g(x) = 0\) (indeterminación \(\frac{0}{0}\)), <b>o</b> si ambos límites son \(\pm\infty\) (indeterminación \(\frac{\infty}{\infty}\)), y además <b>existe</b> \(\lim_{x \to a} \frac{f'(x)}{g'(x)}\), entonces:</p>
+<div class="eq">\[ \lim_{x \to a} \dfrac{f(x)}{g(x)} = \lim_{x \to a} \dfrac{f'(x)}{g'(x)} \]</div>
+<p>Vale también para \(x \to \infty\). Se puede aplicar <b>varias veces</b> mientras siga la indeterminación.</p>
+</div>
+<ol class="pasos">
+<li>Reemplazar y comprobar que da \(\frac{0}{0}\) o \(\frac{\infty}{\infty}\).</li>
+<li>Derivar numerador y denominador <b>por separado</b>.</li>
+<li>Calcular el nuevo límite. Si vuelve a dar \(\frac{0}{0}\) o \(\frac{\infty}{\infty}\), repetir.</li>
+</ol>
+<div class="box ej">
+<p class="box-t">Ejemplo 1</p>
+<div class="eq">\[ \begin{aligned} \lim_{x \to 2} \dfrac{x^2 - 4}{\ln(x-1)} &= \dfrac{0}{\ln 1} = \dfrac{0}{0} \\ &= \lim_{x \to 2} \dfrac{2x}{\frac{1}{x-1}} = \dfrac{4}{1} = 4 \end{aligned} \]</div>
+<p class="rta"><b>Respuesta:</b> \(4\).</p>
+</div>
+<div class="box ej">
+<p class="box-t">Ejemplo 2</p>
+<p>\(\lim_{x \to \infty} \dfrac{e^x}{x^5 - 1}\) es de tipo \(\frac{\infty}{\infty}\). Se aplica 5 veces:</p>
+<div class="eq">\[ \dfrac{e^x}{5x^4} \;\to\; \dfrac{e^x}{20x^3} \;\to\; \dfrac{e^x}{60x^2} \;\to\; \dfrac{e^x}{120x} \;\to\; \dfrac{e^x}{120} \]</div>
+<p class="rta"><b>Respuesta:</b> el último tiende a \(\infty\).</p>
+</div>
+<div class="box ej">
+<p class="box-t">Ejemplo 3</p>
+<div class="eq">\[ \begin{aligned} \lim_{x \to 1} \dfrac{\sqrt{x} - 1}{5x^2 - 5x} &= \dfrac{0}{0} \\ &= \lim_{x \to 1} \dfrac{\frac{1}{2\sqrt{x}}}{10x - 5} = \dfrac{1/2}{5} = \dfrac{1}{10} \end{aligned} \]</div>
+<p class="rta"><b>Respuesta:</b> \(\frac{1}{10}\).</p>
+</div>
+<div class="box ojo">
+<p class="box-t">Ojo</p>
+<ul>
+<li>Se deriva arriba y abajo <b>por separado</b>; NO se usa la regla del cociente.</li>
+<li>Aplicarla solo si da \(\frac{0}{0}\) o \(\frac{\infty}{\infty}\). Si el límite da un número o \(\frac{k}{0}\), no se usa.</li>
+<li>Si el límite de \(\frac{f'}{g'}\) no existe, la regla no permite concluir.</li>
+<li>"log" en los apuntes es \(\ln\): \((\ln u)' = \frac{u'}{u}\).</li>
+</ul>
+</div>
+</article>
+</section>
+
+<section class="bloque" id="teoria">
+<header class="bloque-head"><p class="eyebrow">Teoría</p><h2>Preguntas teóricas probables</h2><p class="lede">Tocá cada pregunta para ver la respuesta.</p></header>
+<div class="preguntas">
+
+<details class="q"><summary>1. ¿Qué dicen los Teoremas 1 y 2 de crecimiento?</summary>
+<div class="resp">Teorema 1: si \(f\) es derivable y creciente (decreciente), entonces \(f' \geq 0\) (\(f' \leq 0\)). Teorema 2: si \(f' \gt 0\) (\(f' \lt 0\)) en un intervalo, \(f\) es creciente (decreciente) en él.</div></details>
+
+<details class="q"><summary>2. ¿Qué es un punto crítico? ¿Todo punto crítico es extremo?</summary>
+<div class="resp">Es un punto \(c\) del dominio con \(f'(c) = 0\) o \(f'(c)\) no existe. No siempre es extremo: en \(f(x) = x^3\), \(x = 0\) es crítico y no es extremo.</div></details>
+
+<details class="q"><summary>3. Condición necesaria de extremo. ¿Es suficiente?</summary>
+<div class="resp">Si \(f\) es derivable en \(c\) y tiene máximo o mínimo local en \(c\), entonces \(f'(c) = 0\). No es suficiente (\(x^3 + 2\) en \(x = 0\)). Un extremo también puede estar donde \(f'\) no existe (\(|x|\) en \(0\)).</div></details>
+
+<details class="q"><summary>4. ¿Cómo se clasifican los extremos con la 1ª derivada?</summary>
+<div class="resp">Si \(f'\) pasa de + a − en \(c\): máximo local. De − a +: mínimo local. Si no cambia de signo: no hay extremo.</div></details>
+
+<details class="q"><summary>5. Criterio de la 2ª derivada. ¿Qué pasa si \(f''(c) = 0\)?</summary>
+<div class="resp">Con \(f'(c) = 0\): \(f''(c) \gt 0\) es mínimo y \(f''(c) \lt 0\) es máximo. Si \(f''(c) = 0\) no decide; se usa la 1ª derivada.</div></details>
+
+<details class="q"><summary>6. ¿Qué relación hay entre concavidad y \(f''\)?</summary>
+<div class="resp">\(f'' \gt 0\) en un intervalo: cóncava hacia arriba (+). \(f'' \lt 0\): cóncava hacia abajo (−).</div></details>
+
+<details class="q"><summary>7. ¿Qué es un punto de inflexión? ¿Alcanza con \(f''(c) = 0\)?</summary>
+<div class="resp">Es donde la curva cambia de concavidad. \(f''(c) = 0\) (o que no exista) es solo candidato: \(f''\) debe cambiar de signo (\(x^4\) en \(0\) no tiene inflexión). Si \(f'''(c) \neq 0\) alcanza, pero no es necesario.</div></details>
+
+<details class="q"><summary>8. Enunciar el teorema de Rolle y el de Lagrange.</summary>
+<div class="resp">Rolle: \(f\) continua en \([a\,;\,b]\), derivable en \((a\,;\,b)\) y \(f(a) = f(b)\), entonces existe \(c\) con \(f'(c) = 0\). Lagrange: sin pedir \(f(a) = f(b)\), existe \(c\) con \(f'(c) = \frac{f(b) - f(a)}{b - a}\).</div></details>
+
+<details class="q"><summary>9. Hipótesis de L'Hôpital. ¿Se puede aplicar más de una vez?</summary>
+<div class="resp">Indeterminación \(\frac{0}{0}\) o \(\frac{\infty}{\infty}\), \(f\) y \(g\) derivables en un entorno reducido de \(a\), \(g' \neq 0\) y existencia del límite de \(\frac{f'}{g'}\). Sí, se puede repetir mientras siga la indeterminación.</div></details>
+
+<details class="q"><summary>10. ¿Qué es el diferencial y qué representan las marginales?</summary>
+<div class="resp">\(dy = f'(x)\,dx\) aproxima el cambio \(\Delta y\) para \(dx\) chico. Costo, ingreso y utilidad marginal son las derivadas \(C'\), \(I'\) y \(U'\): el cambio aproximado por una unidad más.</div></details>
+
+</div>
+</section>
+
+<p class="pie">Fuentes: filminas de la profesora, Guías 6 y 7, guías complementarias, tabla de derivadas LAR y apuntes de clase. Las erratas del material están corregidas en las cajas de error típico.</p>
+</main>
+</div>
+<script>
+// Gráfico de x^3-3x: escala única para curva, ejes y marcas.
+(function(){
+  var svg=document.getElementById('graf'), ns='http://www.w3.org/2000/svg';
+  var W=440,H=300,P=28, xmin=-2.3,xmax=2.3,ymin=-3.2,ymax=3.2;
+  function X(x){return P+(x-xmin)/(xmax-xmin)*(W-2*P)}
+  function Y(y){return H-P-(y-ymin)/(ymax-ymin)*(H-2*P)}
+  function el(t,a){var e=document.createElementNS(ns,t);for(var k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e}
+  for(var i=-2;i<=2;i++){el('line',{x1:X(i),y1:Y(ymin),x2:X(i),y2:Y(ymax),stroke:'var(--grid)','stroke-width':1})}
+  for(var j=-3;j<=3;j++){el('line',{x1:X(xmin),y1:Y(j),x2:X(xmax),y2:Y(j),stroke:'var(--grid)','stroke-width':1})}
+  el('line',{x1:X(xmin),y1:Y(0),x2:X(xmax),y2:Y(0),stroke:'var(--muted)','stroke-width':1.2});
+  el('line',{x1:X(0),y1:Y(ymin),x2:X(0),y2:Y(ymax),stroke:'var(--muted)','stroke-width':1.2});
+  [-2,-1,1,2].forEach(function(t){var e=el('text',{x:X(t),y:Y(0)+16,'text-anchor':'middle','font-size':11,fill:'var(--muted)'});e.textContent=t});
+  [-2,2].forEach(function(t){var e=el('text',{x:X(0)-8,y:Y(t)+4,'text-anchor':'end','font-size':11,fill:'var(--muted)'});e.textContent=t});
+  // tangentes horizontales en los extremos
+  [[-1,2],[1,-2]].forEach(function(p){el('line',{x1:X(p[0]-.7),y1:Y(p[1]),x2:X(p[0]+.7),y2:Y(p[1]),stroke:'var(--teo)','stroke-width':1.5,'stroke-dasharray':'5 4'})});
+  var d='';for(var k=0;k<=200;k++){var x=-2.15+4.3*k/200,y=x*x*x-3*x;d+=(k?'L':'M')+X(x).toFixed(1)+' '+Y(y).toFixed(1)}
+  el('path',{d:d,fill:'none',stroke:'var(--accent)','stroke-width':2.6,'stroke-linecap':'round'});
+  [[-1,2,'máx (−1; 2)',-10],[1,-2,'mín (1; −2)',22],[0,0,'inflexión (0; 0)',-10]].forEach(function(p){
+    el('circle',{cx:X(p[0]),cy:Y(p[1]),r:5,fill:'var(--sheet)',stroke:p[0]===0?'var(--ojo)':'var(--teo)','stroke-width':2.2});
+    var t=el('text',{x:X(p[0])+(p[0]===0?8:0),y:Y(p[1])+p[3],'text-anchor':p[0]===0?'start':'middle','font-size':12,'font-weight':700,fill:'var(--ink)'});t.textContent=p[2];
+  });
+})();
+</script>
+</body>
+</html>
